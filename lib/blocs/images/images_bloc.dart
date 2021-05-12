@@ -9,6 +9,8 @@ import 'package:gelato_flutter_challenge/models/picsum_api_error.dart';
 import 'package:gelato_flutter_challenge/models/picsum_image_data.dart';
 import 'package:meta/meta.dart';
 
+import '../../models/picsum_image_data.dart';
+
 part 'images_event.dart';
 part 'images_state.dart';
 
