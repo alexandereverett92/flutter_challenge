@@ -19,14 +19,14 @@ class _ImageListPageState extends State<ImageListPage> {
           appBar: AppBar(
             // Here we take the value from the MyHomePage object that was created by
             // the App.build method, and use it to set our appbar title.
-            title: Text('Challenge'),
+            title: const Text('Challenge'),
           ),
           body: GridView.builder(
             cacheExtent: MediaQuery.of(context).size.longestSide * 2,
             itemCount: state.images.length,
-            gridDelegate:
-                SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
-            itemBuilder: (context, index) {
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 3),
+            itemBuilder: (BuildContext context, int index) {
               return ImageDisplay(
                 url: state.images[index].downloadUrl,
               );

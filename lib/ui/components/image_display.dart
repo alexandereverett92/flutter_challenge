@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:gelato_flutter_challenge/ui/pages/fullscreen_image_page.dart';
 
 class ImageDisplay extends StatefulWidget {
   const ImageDisplay({this.url});
@@ -18,12 +19,26 @@ class _ImageDisplay extends State<ImageDisplay> {
       imageUrl: widget.url,
       imageBuilder:
           (BuildContext context, ImageProvider<Object> imageProvider) =>
-              Container(
-        margin: const EdgeInsets.all(2),
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: imageProvider,
-            fit: BoxFit.cover,
+              GestureDetector(
+        onTap: () {
+          Navigator.of(context).push(
+            MaterialPageRoute<FullscreenImagePage>(
+              fullscreenDialog: true,
+              builder: (BuildContext context) {
+                return FullscreenImagePage(
+                  imageProvider: imageProvider,
+                );
+              },
+            ),
+          );
+        },
+        child: Container(
+          margin: const EdgeInsets.all(2),
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: imageProvider,
+              fit: BoxFit.cover,
+            ),
           ),
         ),
       ),
