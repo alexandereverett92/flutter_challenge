@@ -22,6 +22,7 @@ class _ImageListPageState extends State<ImageListPage> {
             title: Text('Challenge'),
           ),
           body: GridView.builder(
+            cacheExtent: MediaQuery.of(context).size.longestSide * 2,
             itemCount: state.images.length,
             gridDelegate:
                 SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),

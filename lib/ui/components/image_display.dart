@@ -13,6 +13,8 @@ class _ImageDisplay extends State<ImageDisplay> {
   @override
   Widget build(BuildContext context) {
     return CachedNetworkImage(
+      fadeOutDuration: const Duration(milliseconds: 300),
+      fadeInDuration: const Duration(milliseconds: 300),
       imageUrl: widget.url,
       imageBuilder:
           (BuildContext context, ImageProvider<Object> imageProvider) =>
