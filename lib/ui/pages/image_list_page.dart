@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gelato_flutter_challenge/blocs/images/images_bloc.dart';
 import 'package:gelato_flutter_challenge/ui/components/image_display.dart';
 
+import '../../blocs/images/images_bloc.dart';
 import '../components/image_display.dart';
 
 class ImageListPage extends StatefulWidget {
@@ -21,16 +22,50 @@ class _ImageListPageState extends State<ImageListPage> {
             // the App.build method, and use it to set our appbar title.
             title: const Text('Challenge'),
           ),
-          body: GridView.builder(
-            cacheExtent: MediaQuery.of(context).size.longestSide * 2,
-            itemCount: state.images.length,
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 3),
-            itemBuilder: (BuildContext context, int index) {
-              return ImageDisplay(
-                url: state.images[index].downloadUrl,
-              );
-            },
+          body: SingleChildScrollView(
+            child: SafeArea(
+              child: Column(
+                mainAxisSize: MainAxisSize.max,
+                children: <Widget>[
+                  GridView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    cacheExtent: MediaQuery.of(context).size.longestSide * 2,
+                    itemCount: state.images.length,
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 3,
+                    ),
+                    itemBuilder: (BuildContext context, int index) {
+                      return ImageDisplay(
+                        url: state.images[index].downloadUrl,
+                      );
+                    },
+                  ),
+                  if (state.status == ImagesStatus.Loading)
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: ConstrainedBox(
+                            constraints: const BoxConstraints.tightFor(
+                              width: 24,
+                              height: 24,
+                            ),
+                            child: const CircularProgressIndicator(),
+                          ),
+                        ),
+                      ],
+                    ),
+                  if (state.status == ImagesStatus.Error)
+                    Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Text(state.errorText),
+                    ),
+                ],
+              ),
+            ),
           ),
         );
       },

@@ -47,7 +47,7 @@ class _ImageDisplay extends State<ImageDisplay> {
       ),
       placeholder: (BuildContext context, String url) => Center(
         child: ConstrainedBox(
-          constraints: const BoxConstraints.tightFor(width: 44, height: 44),
+          constraints: const BoxConstraints.tightFor(width: 24, height: 24),
           child: const CircularProgressIndicator(),
         ),
       ),
