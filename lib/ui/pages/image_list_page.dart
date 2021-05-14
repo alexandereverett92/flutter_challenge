@@ -12,6 +12,33 @@ class ImageListPage extends StatefulWidget {
 }
 
 class _ImageListPageState extends State<ImageListPage> {
+  ScrollController scrollController = ScrollController();
+
+  @override
+  void initState() {
+    scrollController.addListener(scrollListener);
+
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    scrollController.dispose();
+    super.dispose();
+  }
+
+  void scrollListener() {
+    final ImagesBloc _imagesBloc = context.read<ImagesBloc>();
+
+    if (_imagesBloc.state.status != ImagesStatus.Success) return;
+
+    if (scrollController.offset >
+        scrollController.position.maxScrollExtent -
+            scrollController.position.viewportDimension * 0.25) {
+      _imagesBloc.add(const ImagesNext());
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<ImagesBloc, ImagesState>(
@@ -23,6 +50,7 @@ class _ImageListPageState extends State<ImageListPage> {
             title: const Text('Challenge'),
           ),
           body: SingleChildScrollView(
+            controller: scrollController,
             child: SafeArea(
               child: Column(
                 mainAxisSize: MainAxisSize.max,
@@ -30,7 +58,7 @@ class _ImageListPageState extends State<ImageListPage> {
                   GridView.builder(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
-                    cacheExtent: MediaQuery.of(context).size.longestSide * 2,
+                    cacheExtent: MediaQuery.of(context).size.longestSide * 1.5,
                     itemCount: state.images.length,
                     gridDelegate:
                         const SliverGridDelegateWithFixedCrossAxisCount(
