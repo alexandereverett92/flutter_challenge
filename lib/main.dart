@@ -16,7 +16,9 @@ class MyApp extends StatelessWidget {
       create: (_) => ImagesBloc()..add(const ImagesNext()),
       child: MaterialApp(
         title: 'Flutter Demo',
-        theme: ThemeData(),
+        theme: ThemeData(
+          brightness: Brightness.dark,
+        ),
         home: const MyHomePage(title: 'Flutter Demo Home Page'),
       ),
     );
