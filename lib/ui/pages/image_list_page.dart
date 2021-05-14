@@ -34,16 +34,20 @@ class _ImageListPageState extends State<ImageListPage> {
     if (_imagesBloc.state.status != ImagesStatus.Success) return;
 
     if (shouldLoadImages(scrollController)) {
-      _imagesBloc.add(const ImagesNext());
+      loadMoreImages();
     }
   }
 
-  /// Determines if the current scroll position is a quarter of the screen from
+  void loadMoreImages() {
+    context.read<ImagesBloc>().add(const ImagesNext());
+  }
+
+  /// Determines if the current scroll position is a third of the screen from
   /// the end of the total scrollable area.
   bool shouldLoadImages(ScrollController scrollController) {
     return scrollController.offset >
         scrollController.position.maxScrollExtent -
-            scrollController.position.viewportDimension * 0.25;
+            scrollController.position.viewportDimension * 0.33;
   }
 
   @override
@@ -88,9 +92,11 @@ class _ImageListPageState extends State<ImageListPage> {
                       ],
                     ),
                   if (state.status == ImagesStatus.Error)
-                    Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Text(state.errorText),
+                    TextButton(
+                      onPressed: loadMoreImages,
+                      child: Text(
+                        state.errorText + ' Please tap here to try again.',
+                      ),
                     ),
                 ],
               ),

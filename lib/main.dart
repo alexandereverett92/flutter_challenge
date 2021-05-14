@@ -18,6 +18,13 @@ class MyApp extends StatelessWidget {
         title: 'Flutter Demo',
         theme: ThemeData(
           brightness: Brightness.dark,
+          textButtonTheme: TextButtonThemeData(
+            style: ButtonStyle(
+              foregroundColor: MaterialStateProperty.all(
+                Colors.white70,
+              ),
+            ),
+          ),
         ),
         home: const MyHomePage(title: 'Flutter Demo Home Page'),
       ),
