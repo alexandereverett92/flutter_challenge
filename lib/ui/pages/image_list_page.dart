@@ -32,11 +32,17 @@ class _ImageListPageState extends State<ImageListPage> {
 
     if (_imagesBloc.state.status != ImagesStatus.Success) return;
 
-    if (scrollController.offset >
-        scrollController.position.maxScrollExtent -
-            scrollController.position.viewportDimension * 0.25) {
+    if (shouldLoadImages(scrollController)) {
       _imagesBloc.add(const ImagesNext());
     }
+  }
+
+  /// Determines if the current scroll position is a quarter of the screen from
+  /// the end of the total scrollable area.
+  bool shouldLoadImages(ScrollController scrollController) {
+    return scrollController.offset >
+        scrollController.position.maxScrollExtent -
+            scrollController.position.viewportDimension * 0.25;
   }
 
   @override
