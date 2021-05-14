@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:gelato_flutter_challenge/ui/components/image_hero.dart';
 import 'package:gelato_flutter_challenge/ui/pages/fullscreen_image_page.dart';
 import 'package:gelato_flutter_challenge/ui/transitions/fade_page_route.dart';
 
@@ -31,17 +32,12 @@ class _ImageDisplay extends State<ImageDisplay> {
             ),
           );
         },
-        child: Hero(
-          tag: widget.url,
-          transitionOnUserGestures: true,
-          child: Container(
-            margin: const EdgeInsets.all(2),
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                image: imageProvider,
-                fit: BoxFit.cover,
-              ),
-            ),
+        child: Padding(
+          padding: EdgeInsets.all(2),
+          child: ImageHero(
+            url: widget.url,
+            imageProvider: imageProvider,
+            boxFit: BoxFit.cover,
           ),
         ),
       ),
