@@ -17,7 +17,7 @@ class _FullscreenImagePageState extends State<FullscreenImagePage> {
       appBar: AppBar(),
       body: InteractiveViewer(
         child: Padding(
-          padding: EdgeInsets.all(4),
+          padding: const EdgeInsets.all(4),
           child: ImageHero(
             imageProvider: widget.imageProvider,
             url: widget.url,

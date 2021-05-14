@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:gelato_flutter_challenge/ui/components/image_hero.dart';
+import 'package:gelato_flutter_challenge/ui/components/sized_loading_indicator.dart';
 import 'package:gelato_flutter_challenge/ui/pages/fullscreen_image_page.dart';
 import 'package:gelato_flutter_challenge/ui/transitions/fade_page_route.dart';
 
@@ -33,7 +34,7 @@ class _ImageDisplay extends State<ImageDisplay> {
           );
         },
         child: Padding(
-          padding: EdgeInsets.all(2),
+          padding: const EdgeInsets.all(2),
           child: ImageHero(
             url: widget.url,
             imageProvider: imageProvider,
@@ -42,10 +43,7 @@ class _ImageDisplay extends State<ImageDisplay> {
         ),
       ),
       placeholder: (BuildContext context, String url) => Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints.tightFor(width: 24, height: 24),
-          child: const CircularProgressIndicator(),
-        ),
+        child: SizedLoadingIndicator(),
       ),
       errorWidget: (BuildContext context, String url, Object error) =>
           const Icon(Icons.error),
