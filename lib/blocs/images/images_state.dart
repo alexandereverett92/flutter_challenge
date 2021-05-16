@@ -6,7 +6,7 @@ enum ImagesStatus { Loading, Error, Success }
 @immutable
 class ImagesState extends Equatable {
   const ImagesState({
-    this.status = ImagesStatus.Loading,
+    this.status = ImagesStatus.Success,
     this.images = const <PicsumImageData>[],
     this.currentPage = 0,
     this.errorText = '',

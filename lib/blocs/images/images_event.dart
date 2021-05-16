@@ -14,3 +14,11 @@ class ImagesNext extends ImagesEvent {
   @override
   List<Object> get props => <Object>[];
 }
+
+/// Dispatched on init to get any state previously stored
+class ImagesStart extends ImagesEvent {
+  const ImagesStart();
+
+  @override
+  List<Object> get props => <Object>[];
+}

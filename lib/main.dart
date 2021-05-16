@@ -1,10 +1,22 @@
+import 'dart:async';
+import 'dart:io';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gelato_flutter_challenge/blocs/images/images_bloc.dart';
 import 'package:gelato_flutter_challenge/ui/pages/image_list_page.dart';
+import 'package:hive/hive.dart';
+import 'package:path_provider/path_provider.dart' as path_provider;
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  final Directory appDocumentDir =
+      await path_provider.getApplicationDocumentsDirectory();
+  Hive.init(appDocumentDir.path);
+
   runApp(MyApp());
 }
 
@@ -13,7 +25,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider<ImagesBloc>(
-      create: (_) => ImagesBloc()..add(const ImagesNext()),
+      create: (_) => ImagesBloc()..add(const ImagesStart()),
       child: MaterialApp(
         title: 'Flutter Demo',
         theme: ThemeData(

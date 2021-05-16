@@ -109,11 +109,15 @@ class _ImageListPageState extends State<ImageListPage> {
                             ],
                           ),
                         if (state.status == ImagesStatus.Error)
-                          TextButton(
-                            onPressed: loadMoreImages,
-                            child: Text(
-                              state.errorText +
-                                  ' Please tap here to try again.',
+                          Padding(
+                            padding: const EdgeInsets.all(16),
+                            child: TextButton(
+                              onPressed: loadMoreImages,
+                              child: Text(
+                                state.errorText +
+                                    ' Please tap here to try again.',
+                                textAlign: TextAlign.center,
+                              ),
                             ),
                           ),
                       ],
