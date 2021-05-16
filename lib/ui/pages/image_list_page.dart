@@ -15,6 +15,7 @@ class _ImageListPageState extends State<ImageListPage> {
 
   @override
   void initState() {
+    loadMoreImages();
     scrollController.addListener(maybeLoadMoreImages);
 
     super.initState();

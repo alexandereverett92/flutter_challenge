@@ -54,6 +54,8 @@ class ImagesBloc extends Bloc<ImagesEvent, ImagesState> {
     ImagesNext event,
     ImagesState state,
   ) async* {
+    if (state.status == ImagesStatus.Loading) return;
+
     try {
       yield state.copyWith(
         status: ImagesStatus.Loading,
@@ -87,6 +89,11 @@ class ImagesBloc extends Bloc<ImagesEvent, ImagesState> {
       yield state.copyWith(
         status: ImagesStatus.Error,
         errorText: 'Could not reach the server.',
+      );
+    } catch (e) {
+      yield state.copyWith(
+        status: ImagesStatus.Error,
+        errorText: 'An unexpected error occurred',
       );
     }
   }
