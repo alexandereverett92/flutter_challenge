@@ -7,6 +7,8 @@ import 'package:json_annotation/json_annotation.dart';
 /// the star denotes the source file name.
 part 'picsum_image_data.g.dart';
 
+const int scaleDownWidth = 300;
+
 @JsonSerializable()
 @immutable
 class PicsumImageData extends Equatable {
@@ -42,6 +44,37 @@ class PicsumImageData extends Equatable {
     final double ratio = height / width;
 
     return displayWidth * ratio;
+  }
+
+  PicsumImageData scaledDownImage() {
+    final int scaleDownHeight =
+        getHeightForWidthDisplay(scaleDownWidth).toInt();
+
+    return PicsumImageData(
+      id: id,
+      author: author,
+      width: scaleDownWidth,
+      height: scaleDownHeight,
+      url: url,
+      downloadUrl:
+          scaleDownDownloadUrl(downloadUrl, scaleDownHeight, scaleDownWidth),
+    );
+  }
+
+  String scaleDownDownloadUrl(String downloadUrl, int height, int width) {
+    List<String> split = downloadUrl.split(RegExp('/'));
+
+    split[split.length - 1] = height.toString();
+    split[split.length - 2] = width.toString();
+
+    String updatedUrl = '';
+
+    for (int i = 0; i < split.length; i++) {
+      updatedUrl += split[i] += '/';
+    }
+
+    print(updatedUrl);
+    return updatedUrl;
   }
 
   @override

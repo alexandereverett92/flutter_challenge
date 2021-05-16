@@ -42,7 +42,10 @@ class ImagesBloc extends Bloc<ImagesEvent, ImagesState> {
 
       yield state.copyWith(
         status: ImagesStatus.Success,
-        images: <PicsumImageData>[...state.images, ...images],
+        images: <PicsumImageData>[
+          ...state.images,
+          ...images.map((e) => e.scaledDownImage())
+        ],
         currentPage: currentPage,
       );
     } on PicsumApiError catch (error) {
