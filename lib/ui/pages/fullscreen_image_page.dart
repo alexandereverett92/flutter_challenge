@@ -277,7 +277,7 @@ class _FullscreenImageDisplay extends StatelessWidget {
             horizontal: getImagePaddingForStatus(status),
           ),
           child: Stack(
-            children: [
+            children: <Widget>[
               ImageHero(
                 imageProvider: imageProvider,
                 url: imageData.downloadUrl,

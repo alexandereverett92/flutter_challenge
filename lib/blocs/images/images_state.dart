@@ -2,6 +2,7 @@ part of 'images_bloc.dart';
 
 enum ImagesStatus { Loading, Error, Success }
 
+@JsonSerializable(explicitToJson: true)
 @immutable
 class ImagesState extends Equatable {
   const ImagesState({
@@ -10,6 +11,11 @@ class ImagesState extends Equatable {
     this.currentPage = 0,
     this.errorText = '',
   });
+
+  factory ImagesState.fromJson(Map<String, dynamic> json) =>
+      _$ImagesStateFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ImagesStateToJson(this);
 
   final ImagesStatus status;
   final List<PicsumImageData> images;
