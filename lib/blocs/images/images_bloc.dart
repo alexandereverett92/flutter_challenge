@@ -44,7 +44,7 @@ class ImagesBloc extends Bloc<ImagesEvent, ImagesState> {
         status: ImagesStatus.Success,
         images: <PicsumImageData>[
           ...state.images,
-          ...images.map((e) => e.scaledDownImage())
+          ...images,
         ],
         currentPage: currentPage,
       );

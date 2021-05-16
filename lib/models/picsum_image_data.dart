@@ -46,26 +46,14 @@ class PicsumImageData extends Equatable {
     return displayWidth * ratio;
   }
 
-  PicsumImageData scaledDownImage() {
+  String scaleDownDownloadUrl() {
     final int scaleDownHeight =
         getHeightForWidthDisplay(scaleDownWidth).toInt();
 
-    return PicsumImageData(
-      id: id,
-      author: author,
-      width: scaleDownWidth,
-      height: scaleDownHeight,
-      url: url,
-      downloadUrl:
-          scaleDownDownloadUrl(downloadUrl, scaleDownHeight, scaleDownWidth),
-    );
-  }
-
-  String scaleDownDownloadUrl(String downloadUrl, int height, int width) {
     List<String> split = downloadUrl.split(RegExp('/'));
 
-    split[split.length - 1] = height.toString();
-    split[split.length - 2] = width.toString();
+    split[split.length - 1] = scaleDownHeight.toString();
+    split[split.length - 2] = scaleDownWidth.toString();
 
     String updatedUrl = '';
 
@@ -73,7 +61,6 @@ class PicsumImageData extends Equatable {
       updatedUrl += split[i] += '/';
     }
 
-    print(updatedUrl);
     return updatedUrl;
   }
 

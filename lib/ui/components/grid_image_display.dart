@@ -29,7 +29,7 @@ class _ImageDisplay extends State<GridImageDisplay> {
           widget.imageData.getHeightForWidthDisplay(imageCachedWidth).toInt(),
       fadeOutDuration: fadeDuration,
       fadeInDuration: fadeDuration,
-      imageUrl: widget.imageData.downloadUrl,
+      imageUrl: widget.imageData.scaleDownDownloadUrl(),
       imageBuilder:
           (BuildContext context, ImageProvider<Object> imageProvider) =>
               GestureDetector(

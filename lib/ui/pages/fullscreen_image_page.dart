@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:gelato_flutter_challenge/models/picsum_image_data.dart';
@@ -28,6 +30,24 @@ class _FullscreenImagePageState extends State<FullscreenImagePage> {
   Offset dragStartPosition;
   Offset currentDragPosition;
   double currentDragDistance;
+  bool showHighResImage = false;
+
+  @override
+  void initState() {
+    setShowHighResImage();
+    super.initState();
+  }
+
+  /// Set the image high res version of the image to display after the transition completes.
+  /// Prevents image being shown twice during the transition
+  void setShowHighResImage() {
+    Timer(const Duration(milliseconds: 300), () {
+      if (mounted)
+        setState(() {
+          showHighResImage = true;
+        });
+    });
+  }
 
   /// Gives an opacity value for use when fading out the page on image drag.
   /// Gives 1.0 when image is dragged less than half the [dragPopDistance].
@@ -150,12 +170,14 @@ class _FullscreenImagePageState extends State<FullscreenImagePage> {
                         onDragEnd: onDragEnd,
                         childWhenDragging: Container(),
                         feedback: _FullscreenImageDisplay(
+                          showHighRes: showHighResImage,
                           imageData: widget.imageData,
                           imageProvider: widget.imageProvider,
                           constraints: constraints,
                           status: FullscreenImageStatus.Dragged,
                         ),
                         child: _FullscreenImageDisplay(
+                          showHighRes: showHighResImage,
                           imageData: widget.imageData,
                           imageProvider: widget.imageProvider,
                           constraints: constraints,
@@ -182,11 +204,13 @@ class _FullscreenImageDisplay extends StatelessWidget {
     this.imageProvider,
     this.constraints,
     this.status,
+    this.showHighRes = false,
   });
   final PicsumImageData imageData;
   final ImageProvider imageProvider;
   final BoxConstraints constraints;
   final FullscreenImageStatus status;
+  final bool showHighRes;
 
   double getImagePaddingForStatus(FullscreenImageStatus status) {
     return status == FullscreenImageStatus.Display
@@ -207,9 +231,25 @@ class _FullscreenImageDisplay extends StatelessWidget {
         padding: EdgeInsets.symmetric(
           horizontal: getImagePaddingForStatus(status),
         ),
-        child: ImageHero(
-          imageProvider: imageProvider,
-          url: imageData.downloadUrl,
+        child: Stack(
+          children: [
+            ImageHero(
+              imageProvider: imageProvider,
+              url: imageData.downloadUrl,
+            ),
+            AnimatedOpacity(
+              opacity: showHighRes ? 1.0 : 0.0,
+              duration: const Duration(milliseconds: 300),
+              child: Container(
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: NetworkImage(imageData.downloadUrl),
+                    fit: BoxFit.contain,
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
