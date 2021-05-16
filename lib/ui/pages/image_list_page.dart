@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gelato_flutter_challenge/blocs/images/images_bloc.dart';
-import 'package:gelato_flutter_challenge/ui/components/image_display.dart';
+import 'package:gelato_flutter_challenge/ui/components/grid_image_display.dart';
 import 'package:gelato_flutter_challenge/ui/components/sized_loading_indicator.dart';
-
-import '../../blocs/images/images_bloc.dart';
-import '../components/image_display.dart';
 
 class ImageListPage extends StatefulWidget {
   @override
@@ -76,8 +73,8 @@ class _ImageListPageState extends State<ImageListPage> {
                       crossAxisCount: 3,
                     ),
                     itemBuilder: (BuildContext context, int index) {
-                      return ImageDisplay(
-                        url: state.images[index].downloadUrl,
+                      return GridImageDisplay(
+                        imageData: state.images[index],
                       );
                     },
                   ),

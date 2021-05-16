@@ -38,6 +38,12 @@ class PicsumImageData extends Equatable {
   @JsonKey(name: 'download_url')
   final String downloadUrl;
 
+  double getHeightForWidthDisplay(int displayWidth) {
+    final double ratio = height / width;
+
+    return displayWidth * ratio;
+  }
+
   @override
   List<Object> get props =>
       <Object>[id, author, width, height, url, downloadUrl];

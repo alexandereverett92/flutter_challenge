@@ -1,25 +1,35 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:gelato_flutter_challenge/models/picsum_image_data.dart';
 import 'package:gelato_flutter_challenge/ui/components/image_hero.dart';
 import 'package:gelato_flutter_challenge/ui/components/sized_loading_indicator.dart';
 import 'package:gelato_flutter_challenge/ui/pages/fullscreen_image_page.dart';
 import 'package:gelato_flutter_challenge/ui/transitions/fade_page_route.dart';
 
-class ImageDisplay extends StatefulWidget {
-  const ImageDisplay({this.url});
-  final String url;
+const int imageCachedWidth = 600;
+const Duration fadeDuration = Duration(milliseconds: 300);
+
+class GridImageDisplay extends StatefulWidget {
+  const GridImageDisplay({@required this.imageData});
+  final PicsumImageData imageData;
 
   @override
   State<StatefulWidget> createState() => _ImageDisplay();
 }
 
-class _ImageDisplay extends State<ImageDisplay> {
+class _ImageDisplay extends State<GridImageDisplay> {
   @override
   Widget build(BuildContext context) {
     return CachedNetworkImage(
-      fadeOutDuration: const Duration(milliseconds: 300),
-      fadeInDuration: const Duration(milliseconds: 300),
-      imageUrl: widget.url,
+      memCacheHeight:
+          widget.imageData.getHeightForWidthDisplay(imageCachedWidth).toInt(),
+      memCacheWidth: imageCachedWidth,
+      maxWidthDiskCache: imageCachedWidth,
+      maxHeightDiskCache:
+          widget.imageData.getHeightForWidthDisplay(imageCachedWidth).toInt(),
+      fadeOutDuration: fadeDuration,
+      fadeInDuration: fadeDuration,
+      imageUrl: widget.imageData.downloadUrl,
       imageBuilder:
           (BuildContext context, ImageProvider<Object> imageProvider) =>
               GestureDetector(
@@ -28,7 +38,7 @@ class _ImageDisplay extends State<ImageDisplay> {
             FadePageRoute<FullscreenImagePage>(
               child: FullscreenImagePage(
                 imageProvider: imageProvider,
-                url: widget.url,
+                imageData: widget.imageData,
               ),
             ),
           );
@@ -36,7 +46,7 @@ class _ImageDisplay extends State<ImageDisplay> {
         child: Padding(
           padding: const EdgeInsets.all(2),
           child: ImageHero(
-            url: widget.url,
+            url: widget.imageData.downloadUrl,
             imageProvider: imageProvider,
             boxFit: BoxFit.cover,
           ),

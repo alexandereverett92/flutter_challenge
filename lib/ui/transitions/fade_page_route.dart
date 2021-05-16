@@ -23,5 +23,11 @@ class FadePageRoute<T> extends PageRoute<T> {
   bool get maintainState => true;
 
   @override
+  bool get fullscreenDialog => true;
+
+  @override
+  bool get opaque => false;
+
+  @override
   Duration get transitionDuration => const Duration(milliseconds: 400);
 }
