@@ -46,11 +46,17 @@ class PicsumImageData extends Equatable {
     return displayWidth * ratio;
   }
 
+  double getWidthForHeightDisplay(int displayHeight) {
+    final double ratio = width / height;
+
+    return displayHeight * ratio;
+  }
+
   String scaleDownDownloadUrl() {
     final int scaleDownHeight =
         getHeightForWidthDisplay(scaleDownWidth).toInt();
 
-    List<String> split = downloadUrl.split(RegExp('/'));
+    final List<String> split = downloadUrl.split(RegExp('/'));
 
     split[split.length - 1] = scaleDownHeight.toString();
     split[split.length - 2] = scaleDownWidth.toString();

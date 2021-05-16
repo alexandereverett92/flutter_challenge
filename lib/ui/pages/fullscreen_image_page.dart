@@ -64,22 +64,39 @@ class _FullscreenImagePageState extends State<FullscreenImagePage> {
     return opacity >= 0 ? opacity : 0.0;
   }
 
-  /// Gives the position of the image from the top of it's container.
-  /// Positions based upon the [imageHeight] to place in the center of the
-  /// [containerHeight].
-  double getPositionTop(
-      Offset offset, double imageHeight, double containerHeight) {
-    if (offset == null) return (containerHeight - imageHeight) / 2;
+  double getPositionTop(Offset offset, PicsumImageData imageData,
+      BoxConstraints constraints, Orientation orientation) {
+    if (orientation == Orientation.portrait) {
+      final double imageHeight =
+          imageData.getHeightForWidthDisplay(constraints.maxWidth.toInt());
 
-    return offset.dy - (imageHeight / 2);
+      if (offset == null) return (constraints.maxHeight - imageHeight) / 2;
+
+      return offset.dy - (imageHeight / 2);
+    } else {
+      if (offset == null) return 0;
+      final double imageHeight = constraints.maxHeight;
+
+      return offset.dy - (imageHeight / 2);
+    }
   }
 
-  /// Converts the [offset] to the position of the image from the left of it's
-  /// container.
-  double getPositionLeft(Offset offset, double imageWidth) {
-    if (offset == null) return 0;
+  double getPositionLeft(Offset offset, PicsumImageData imageData,
+      BoxConstraints constraints, Orientation orientation) {
+    if (orientation == Orientation.portrait) {
+      if (offset == null) return 0;
+      final double imageWidth =
+          constraints.maxWidth - imageDisplayHorizontalPadding * 2;
 
-    return offset.dx - (imageWidth / 2);
+      return offset.dx - (imageWidth / 2);
+    } else {
+      final double imageWidth =
+          imageData.getWidthForHeightDisplay(constraints.maxHeight.toInt());
+
+      if (offset == null) return (constraints.maxWidth - imageWidth) / 2;
+
+      return offset.dy - (imageWidth / 2);
+    }
   }
 
   /// Stores the position of the image being dragged.
@@ -144,51 +161,57 @@ class _FullscreenImagePageState extends State<FullscreenImagePage> {
                   ? imageDisplayHorizontalPadding
                   : imageDragHorizontalPadding,
             ),
-            child: LayoutBuilder(
-                builder: (BuildContext context, BoxConstraints constraints) {
-              return Stack(
-                children: <Widget>[
-                  AnimatedPositioned(
-                    duration: Duration(
-                        milliseconds: animationDuration.inMilliseconds ~/ 2),
-                    top: getPositionTop(
-                      currentDragPosition,
-                      widget.imageData.getHeightForWidthDisplay(
-                        constraints.maxWidth.toInt(),
-                      ),
-                      constraints.maxHeight,
-                    ),
-                    left: getPositionLeft(
-                      currentDragPosition,
-                      constraints.maxWidth - imageDisplayHorizontalPadding * 2,
-                    ),
-                    child: Center(
-                      child: Draggable<Widget>(
-                        affinity: Axis.vertical,
-                        maxSimultaneousDrags: 1,
-                        onDragUpdate: onDragUpdate,
-                        onDragEnd: onDragEnd,
-                        childWhenDragging: Container(),
-                        feedback: _FullscreenImageDisplay(
-                          showHighRes: showHighResImage,
-                          imageData: widget.imageData,
-                          imageProvider: widget.imageProvider,
-                          constraints: constraints,
-                          status: FullscreenImageStatus.Dragged,
+            child: SafeArea(
+              child: LayoutBuilder(
+                  builder: (BuildContext context, BoxConstraints constraints) {
+                return Center(
+                  child: Stack(
+                    children: <Widget>[
+                      AnimatedPositioned(
+                        duration: Duration(
+                          milliseconds: animationDuration.inMilliseconds ~/ 2,
                         ),
-                        child: _FullscreenImageDisplay(
-                          showHighRes: showHighResImage,
-                          imageData: widget.imageData,
-                          imageProvider: widget.imageProvider,
-                          constraints: constraints,
-                          status: status,
+                        top: getPositionTop(
+                          currentDragPosition,
+                          widget.imageData,
+                          constraints,
+                          MediaQuery.of(context).orientation,
+                        ),
+                        left: getPositionLeft(
+                          currentDragPosition,
+                          widget.imageData,
+                          constraints,
+                          MediaQuery.of(context).orientation,
+                        ),
+                        child: Center(
+                          child: Draggable<Widget>(
+                            affinity: Axis.vertical,
+                            maxSimultaneousDrags: 1,
+                            onDragUpdate: onDragUpdate,
+                            onDragEnd: onDragEnd,
+                            childWhenDragging: Container(),
+                            feedback: _FullscreenImageDisplay(
+                              showHighRes: showHighResImage,
+                              imageData: widget.imageData,
+                              imageProvider: widget.imageProvider,
+                              constraints: constraints,
+                              status: FullscreenImageStatus.Dragged,
+                            ),
+                            child: _FullscreenImageDisplay(
+                              showHighRes: showHighResImage,
+                              imageData: widget.imageData,
+                              imageProvider: widget.imageProvider,
+                              constraints: constraints,
+                              status: status,
+                            ),
+                          ),
                         ),
                       ),
-                    ),
+                    ],
                   ),
-                ],
-              );
-            }),
+                );
+              }),
+            ),
           ),
         ),
       ),
@@ -218,40 +241,63 @@ class _FullscreenImageDisplay extends StatelessWidget {
         : imageDragHorizontalPadding;
   }
 
+  BoxConstraints getBoxConstraintsForOrientation(Orientation orientation,
+      BoxConstraints constraints, PicsumImageData imageData) {
+    switch (orientation) {
+      case Orientation.portrait:
+        return constraints.copyWith(
+          maxHeight: imageData.getHeightForWidthDisplay(
+            constraints.maxWidth.toInt(),
+          ),
+        );
+      case Orientation.landscape:
+        return constraints.copyWith(
+          maxWidth: imageData.getWidthForHeightDisplay(
+            constraints.maxHeight.toInt(),
+          ),
+        );
+      default:
+        return constraints;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return ConstrainedBox(
-      constraints: constraints.copyWith(
-        maxHeight: imageData.getHeightForWidthDisplay(
-          constraints.maxWidth.toInt(),
+    return OrientationBuilder(
+        builder: (BuildContext context, Orientation orientation) {
+      return ConstrainedBox(
+        constraints: getBoxConstraintsForOrientation(
+          MediaQuery.of(context).orientation,
+          constraints,
+          imageData,
         ),
-      ),
-      child: AnimatedPadding(
-        duration: animationDuration,
-        padding: EdgeInsets.symmetric(
-          horizontal: getImagePaddingForStatus(status),
-        ),
-        child: Stack(
-          children: [
-            ImageHero(
-              imageProvider: imageProvider,
-              url: imageData.downloadUrl,
-            ),
-            AnimatedOpacity(
-              opacity: showHighRes ? 1.0 : 0.0,
-              duration: const Duration(milliseconds: 300),
-              child: Container(
-                decoration: BoxDecoration(
-                  image: DecorationImage(
-                    image: NetworkImage(imageData.downloadUrl),
-                    fit: BoxFit.contain,
+        child: AnimatedPadding(
+          duration: animationDuration,
+          padding: EdgeInsets.symmetric(
+            horizontal: getImagePaddingForStatus(status),
+          ),
+          child: Stack(
+            children: [
+              ImageHero(
+                imageProvider: imageProvider,
+                url: imageData.downloadUrl,
+              ),
+              AnimatedOpacity(
+                opacity: showHighRes ? 1.0 : 0.0,
+                duration: const Duration(milliseconds: 300),
+                child: Container(
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: NetworkImage(imageData.downloadUrl),
+                      fit: BoxFit.contain,
+                    ),
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
-      ),
-    );
+      );
+    });
   }
 }
