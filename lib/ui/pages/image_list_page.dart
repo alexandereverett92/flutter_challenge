@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gelato_flutter_challenge/blocs/images/images_bloc.dart';
+import 'package:gelato_flutter_challenge/models/picsum_image_data.dart';
 import 'package:gelato_flutter_challenge/ui/components/grid_image_display.dart';
 import 'package:gelato_flutter_challenge/ui/components/sized_loading_indicator.dart';
 
@@ -54,6 +55,14 @@ class _ImageListPageState extends State<ImageListPage> {
             scrollController.position.viewportDimension * 2;
   }
 
+  /// Get an appropriate number of images to show in each row.
+  /// Each image displayed is half the cached image size.
+  /// Based displaying 3 images in a row for an iPhone12 pro max
+  int getAxisCountForScreenWidth(BuildContext context) {
+    final double width = MediaQuery.of(context).size.width;
+    return (width / (scaleDownWidth / 2)).ceil();
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocListener<ImagesBloc, ImagesState>(
@@ -66,47 +75,52 @@ class _ImageListPageState extends State<ImageListPage> {
               // the App.build method, and use it to set our appbar title.
               title: const Text('Challenge'),
             ),
-            body: SingleChildScrollView(
-              controller: scrollController,
-              child: SafeArea(
-                child: Column(
-                  mainAxisSize: MainAxisSize.max,
-                  children: <Widget>[
-                    GridView.builder(
-                      cacheExtent: 0,
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: state.images.length,
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 3,
-                      ),
-                      itemBuilder: (BuildContext context, int index) {
-                        return GridImageDisplay(
-                          imageData: state.images[index],
-                        );
-                      },
-                    ),
-                    if (state.status == ImagesStatus.Loading)
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          Padding(
-                            padding: const EdgeInsets.all(16),
-                            child: SizedLoadingIndicator(),
+            body: OrientationBuilder(
+              builder: (BuildContext context, Orientation orientation) {
+                return SingleChildScrollView(
+                  controller: scrollController,
+                  child: SafeArea(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.max,
+                      children: <Widget>[
+                        GridView.builder(
+                          cacheExtent: 0,
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: state.images.length,
+                          gridDelegate:
+                              SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: getAxisCountForScreenWidth(context),
                           ),
-                        ],
-                      ),
-                    if (state.status == ImagesStatus.Error)
-                      TextButton(
-                        onPressed: loadMoreImages,
-                        child: Text(
-                          state.errorText + ' Please tap here to try again.',
+                          itemBuilder: (BuildContext context, int index) {
+                            return GridImageDisplay(
+                              imageData: state.images[index],
+                            );
+                          },
                         ),
-                      ),
-                  ],
-                ),
-              ),
+                        if (state.status == ImagesStatus.Loading)
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              Padding(
+                                padding: const EdgeInsets.all(16),
+                                child: SizedLoadingIndicator(),
+                              ),
+                            ],
+                          ),
+                        if (state.status == ImagesStatus.Error)
+                          TextButton(
+                            onPressed: loadMoreImages,
+                            child: Text(
+                              state.errorText +
+                                  ' Please tap here to try again.',
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                );
+              },
             ),
           );
         },

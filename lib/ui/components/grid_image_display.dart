@@ -6,7 +6,6 @@ import 'package:gelato_flutter_challenge/ui/components/sized_loading_indicator.d
 import 'package:gelato_flutter_challenge/ui/pages/fullscreen_image_page.dart';
 import 'package:gelato_flutter_challenge/ui/transitions/fade_page_route.dart';
 
-const int imageCachedWidth = 600;
 const Duration fadeDuration = Duration(milliseconds: 300);
 
 class GridImageDisplay extends StatefulWidget {
@@ -22,11 +21,11 @@ class _ImageDisplay extends State<GridImageDisplay> {
   Widget build(BuildContext context) {
     return CachedNetworkImage(
       memCacheHeight:
-          widget.imageData.getHeightForWidthDisplay(imageCachedWidth).toInt(),
-      memCacheWidth: imageCachedWidth,
-      maxWidthDiskCache: imageCachedWidth,
+          widget.imageData.getHeightForWidthDisplay(scaleDownWidth).toInt(),
+      memCacheWidth: scaleDownWidth,
+      maxWidthDiskCache: scaleDownWidth,
       maxHeightDiskCache:
-          widget.imageData.getHeightForWidthDisplay(imageCachedWidth).toInt(),
+          widget.imageData.getHeightForWidthDisplay(scaleDownWidth).toInt(),
       fadeOutDuration: fadeDuration,
       fadeInDuration: fadeDuration,
       imageUrl: widget.imageData.scaleDownDownloadUrl(),
