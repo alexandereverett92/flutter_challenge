@@ -14,7 +14,7 @@ class _ImageListPageState extends State<ImageListPage> {
 
   @override
   void initState() {
-    scrollController.addListener(scrollListener);
+    scrollController.addListener(maybeLoadMoreImages);
 
     super.initState();
   }
@@ -25,11 +25,7 @@ class _ImageListPageState extends State<ImageListPage> {
     super.dispose();
   }
 
-  void scrollListener() {
-    final ImagesBloc _imagesBloc = context.read<ImagesBloc>();
-
-    if (_imagesBloc.state.status != ImagesStatus.Success) return;
-
+  void maybeLoadMoreImages() {
     if (shouldLoadImages(scrollController)) {
       loadMoreImages();
     }
@@ -39,68 +35,82 @@ class _ImageListPageState extends State<ImageListPage> {
     context.read<ImagesBloc>().add(const ImagesNext());
   }
 
-  /// Determines if the current scroll position is a third of the screen from
-  /// the end of the total scrollable area.
+  /// Gives [true] when the following conditions are met:
+  /// - [status] is success
+  /// - [scrollController] has been attached to the view
+  /// - The current scrolling position is less than twice
+  /// the visible scroll area from the end.
   bool shouldLoadImages(ScrollController scrollController) {
+    final ImagesBloc _imagesBloc = context.read<ImagesBloc>();
+
+    if (_imagesBloc.state.status != ImagesStatus.Success) return false;
+
+    if (!scrollController.hasClients) return false;
+
+    if (scrollController.position.maxScrollExtent == null) return true;
+
     return scrollController.offset >
         scrollController.position.maxScrollExtent -
-            scrollController.position.viewportDimension * 0.33;
+            scrollController.position.viewportDimension * 2;
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<ImagesBloc, ImagesState>(
-      builder: (BuildContext context, ImagesState state) {
-        return Scaffold(
-          appBar: AppBar(
-            // Here we take the value from the MyHomePage object that was created by
-            // the App.build method, and use it to set our appbar title.
-            title: const Text('Challenge'),
-          ),
-          body: SingleChildScrollView(
-            controller: scrollController,
-            child: SafeArea(
-              child: Column(
-                mainAxisSize: MainAxisSize.max,
-                children: <Widget>[
-                  GridView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    cacheExtent: MediaQuery.of(context).size.longestSide * 1.5,
-                    itemCount: state.images.length,
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 3,
-                    ),
-                    itemBuilder: (BuildContext context, int index) {
-                      return GridImageDisplay(
-                        imageData: state.images[index],
-                      );
-                    },
-                  ),
-                  if (state.status == ImagesStatus.Loading)
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Padding(
-                          padding: const EdgeInsets.all(16),
-                          child: SizedLoadingIndicator(),
-                        ),
-                      ],
-                    ),
-                  if (state.status == ImagesStatus.Error)
-                    TextButton(
-                      onPressed: loadMoreImages,
-                      child: Text(
-                        state.errorText + ' Please tap here to try again.',
+    return BlocListener<ImagesBloc, ImagesState>(
+      listener: (_, __) => maybeLoadMoreImages(),
+      child: BlocBuilder<ImagesBloc, ImagesState>(
+        builder: (BuildContext context, ImagesState state) {
+          return Scaffold(
+            appBar: AppBar(
+              // Here we take the value from the MyHomePage object that was created by
+              // the App.build method, and use it to set our appbar title.
+              title: const Text('Challenge'),
+            ),
+            body: SingleChildScrollView(
+              controller: scrollController,
+              child: SafeArea(
+                child: Column(
+                  mainAxisSize: MainAxisSize.max,
+                  children: <Widget>[
+                    GridView.builder(
+                      cacheExtent: 0,
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: state.images.length,
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 3,
                       ),
+                      itemBuilder: (BuildContext context, int index) {
+                        return GridImageDisplay(
+                          imageData: state.images[index],
+                        );
+                      },
                     ),
-                ],
+                    if (state.status == ImagesStatus.Loading)
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Padding(
+                            padding: const EdgeInsets.all(16),
+                            child: SizedLoadingIndicator(),
+                          ),
+                        ],
+                      ),
+                    if (state.status == ImagesStatus.Error)
+                      TextButton(
+                        onPressed: loadMoreImages,
+                        child: Text(
+                          state.errorText + ' Please tap here to try again.',
+                        ),
+                      ),
+                  ],
+                ),
               ),
             ),
-          ),
-        );
-      },
+          );
+        },
+      ),
     );
   }
 }

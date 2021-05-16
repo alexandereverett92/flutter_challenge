@@ -7,7 +7,7 @@ import 'package:http/http.dart' as http;
 const String picsumUrl = 'picsum.photos';
 
 /// Specifies the number of images retrieved by the api for each "page"
-const int imagesPerRequest = 20;
+const int imagesPerRequest = 3;
 
 class PicsumApi {
   /// Formats the [Uri] object for use within api calls

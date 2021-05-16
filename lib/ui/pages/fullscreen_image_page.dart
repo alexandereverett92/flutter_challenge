@@ -127,7 +127,7 @@ class _FullscreenImagePageState extends State<FullscreenImagePage> {
             child: LayoutBuilder(
                 builder: (BuildContext context, BoxConstraints constraints) {
               return Stack(
-                children: [
+                children: <Widget>[
                   AnimatedPositioned(
                     duration: Duration(
                         milliseconds: animationDuration.inMilliseconds ~/ 2),
