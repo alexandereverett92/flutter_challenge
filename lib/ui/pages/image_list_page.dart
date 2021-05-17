@@ -5,6 +5,8 @@ import 'package:gelato_flutter_challenge/models/picsum_image_data.dart';
 import 'package:gelato_flutter_challenge/ui/components/grid_image_display.dart';
 import 'package:gelato_flutter_challenge/ui/components/sized_loading_indicator.dart';
 
+const int minImagesPerRow = 3;
+
 class ImageListPage extends StatefulWidget {
   @override
   State<StatefulWidget> createState() => _ImageListPageState();
@@ -58,10 +60,13 @@ class _ImageListPageState extends State<ImageListPage> {
 
   /// Get an appropriate number of images to show in each row.
   /// Each image displayed is half the cached image size.
-  /// Based displaying 3 images in a row for an iPhone12 pro max
+  /// Applies the [minImagesPerRow]
   int getAxisCountForScreenWidth(BuildContext context) {
     final double width = MediaQuery.of(context).size.width;
-    return (width / scaleDownWidth).ceil();
+
+    final int count = (width / scaleDownWidth).ceil();
+
+    return count > minImagesPerRow ? count : minImagesPerRow;
   }
 
   @override
