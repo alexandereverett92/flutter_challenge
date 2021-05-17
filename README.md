@@ -1,6 +1,4 @@
-# gelato_flutter_challenge
-
-A new Flutter application.
+# Gelato Flutter Challenge
 
 ## Getting Started
 
