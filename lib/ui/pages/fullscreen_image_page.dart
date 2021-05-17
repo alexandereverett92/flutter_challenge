@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:typed_data';
 
+import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:gelato_flutter_challenge/api/picsum_api.dart';
@@ -159,6 +160,43 @@ class _FullscreenImagePageState extends State<FullscreenImagePage> {
     );
   }
 
+  /// Gives constraints for displaying the image.
+  ///
+  /// When the [deviceOrientation] is [portrait] the [constraints] height is
+  /// adjusted to match the constraints width in relation to the images size.
+  /// Landscape does the opposite.
+  ///
+  /// Where the portrait display adjusted height exceeds the actual height, the
+  /// landscape orientation is used.
+  _ImageSizingData getImageSizingData(Orientation deviceOrientation,
+      BoxConstraints constraints, PicsumImageData imageData) {
+    BoxConstraints updatedConstraints = constraints;
+    Orientation updatedOrientation = deviceOrientation;
+
+    if (deviceOrientation == Orientation.portrait) {
+      updatedConstraints = constraints.copyWith(
+        maxHeight: imageData.getHeightForWidthDisplay(
+          constraints.maxWidth.toInt(),
+        ),
+      );
+      updatedOrientation = Orientation.portrait;
+    }
+
+    if (deviceOrientation == Orientation.landscape ||
+        updatedConstraints.maxHeight > constraints.maxHeight) {
+      updatedConstraints = constraints.copyWith(
+        maxWidth: imageData.getWidthForHeightDisplay(
+          constraints.maxHeight.toInt(),
+        ),
+      );
+      updatedOrientation = Orientation.landscape;
+    }
+    return _ImageSizingData(
+      constraints: updatedConstraints,
+      orientation: updatedOrientation,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return AnimatedOpacity(
@@ -168,13 +206,13 @@ class _FullscreenImagePageState extends State<FullscreenImagePage> {
       ),
       child: Scaffold(
         appBar: AppBar(
-          actions: [
+          actions: <Widget>[
             IconButton(
               icon: const Icon(
                 Icons.share,
               ),
               onPressed: () => shareImage(widget.imageData),
-              padding: const EdgeInsets.symmetric(horizontal: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 16),
             ),
           ],
         ),
@@ -189,6 +227,12 @@ class _FullscreenImagePageState extends State<FullscreenImagePage> {
             child: SafeArea(
               child: LayoutBuilder(
                   builder: (BuildContext context, BoxConstraints constraints) {
+                final _ImageSizingData _imageSizingData = getImageSizingData(
+                  MediaQuery.of(context).orientation,
+                  constraints,
+                  widget.imageData,
+                );
+
                 return Center(
                   child: Stack(
                     children: <Widget>[
@@ -200,13 +244,13 @@ class _FullscreenImagePageState extends State<FullscreenImagePage> {
                           currentDragPosition,
                           widget.imageData,
                           constraints,
-                          MediaQuery.of(context).orientation,
+                          _imageSizingData.orientation,
                         ),
                         left: getPositionLeft(
                           currentDragPosition,
                           widget.imageData,
                           constraints,
-                          MediaQuery.of(context).orientation,
+                          _imageSizingData.orientation,
                         ),
                         child: Center(
                           child: Draggable<Widget>(
@@ -219,14 +263,14 @@ class _FullscreenImagePageState extends State<FullscreenImagePage> {
                               showHighRes: showHighResImage,
                               imageData: widget.imageData,
                               imageProvider: widget.imageProvider,
-                              constraints: constraints,
+                              constraints: _imageSizingData.constraints,
                               status: FullscreenImageStatus.Dragged,
                             ),
                             child: _FullscreenImageDisplay(
                               showHighRes: showHighResImage,
                               imageData: widget.imageData,
                               imageProvider: widget.imageProvider,
-                              constraints: constraints,
+                              constraints: _imageSizingData.constraints,
                               status: status,
                             ),
                           ),
@@ -266,63 +310,48 @@ class _FullscreenImageDisplay extends StatelessWidget {
         : imageDragHorizontalPadding;
   }
 
-  BoxConstraints getBoxConstraintsForOrientation(Orientation orientation,
-      BoxConstraints constraints, PicsumImageData imageData) {
-    switch (orientation) {
-      case Orientation.portrait:
-        return constraints.copyWith(
-          maxHeight: imageData.getHeightForWidthDisplay(
-            constraints.maxWidth.toInt(),
-          ),
-        );
-      case Orientation.landscape:
-        return constraints.copyWith(
-          maxWidth: imageData.getWidthForHeightDisplay(
-            constraints.maxHeight.toInt(),
-          ),
-        );
-      default:
-        return constraints;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    return OrientationBuilder(
-        builder: (BuildContext context, Orientation orientation) {
-      return ConstrainedBox(
-        constraints: getBoxConstraintsForOrientation(
-          MediaQuery.of(context).orientation,
-          constraints,
-          imageData,
+    return ConstrainedBox(
+      constraints: constraints,
+      child: AnimatedPadding(
+        duration: animationDuration,
+        padding: EdgeInsets.symmetric(
+          horizontal: getImagePaddingForStatus(status),
         ),
-        child: AnimatedPadding(
-          duration: animationDuration,
-          padding: EdgeInsets.symmetric(
-            horizontal: getImagePaddingForStatus(status),
-          ),
-          child: Stack(
-            children: <Widget>[
-              ImageHero(
-                imageProvider: imageProvider,
-                url: imageData.downloadUrl,
-              ),
-              AnimatedOpacity(
-                opacity: showHighRes ? 1.0 : 0.0,
-                duration: const Duration(milliseconds: 300),
-                child: Container(
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: NetworkImage(imageData.downloadUrl),
-                      fit: BoxFit.contain,
-                    ),
+        child: Stack(
+          children: <Widget>[
+            ImageHero(
+              imageProvider: imageProvider,
+              url: imageData.downloadUrl,
+            ),
+            AnimatedOpacity(
+              opacity: showHighRes ? 1.0 : 0.0,
+              duration: const Duration(milliseconds: 300),
+              child: Container(
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: NetworkImage(imageData.downloadUrl),
+                    fit: BoxFit.contain,
                   ),
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
-      );
-    });
+      ),
+    );
   }
+}
+
+class _ImageSizingData extends Equatable {
+  const _ImageSizingData({this.constraints, this.orientation});
+  final BoxConstraints constraints;
+  final Orientation orientation;
+
+  @override
+  bool get stringify => true;
+
+  @override
+  List<Object> get props => <Object>[constraints, orientation];
 }
