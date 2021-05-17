@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:gelato_flutter_challenge/models/picsum_image_data.dart';
 import 'package:gelato_flutter_challenge/ui/components/image_hero.dart';
+import 'package:http/http.dart' as http;
+import 'package:wc_flutter_share/wc_flutter_share.dart';
 
 enum FullscreenImageStatus { Display, Dragged, DragPop, Closing }
 
@@ -144,6 +146,20 @@ class _FullscreenImagePageState extends State<FullscreenImagePage> {
     }
   }
 
+  Future<void> shareImage() async {
+    final http.Response response = await http.get(
+      Uri.base.resolve(widget.imageData.downloadUrl),
+    );
+    print(Uri.base.resolve(widget.imageData.downloadUrl).toString());
+
+    await WcFlutterShare.share(
+      sharePopupTitle: 'Share',
+      fileName: '${widget.imageData.id}.jpg',
+      mimeType: 'image/jpg',
+      bytesOfFile: response.bodyBytes,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return AnimatedOpacity(
@@ -152,7 +168,17 @@ class _FullscreenImagePageState extends State<FullscreenImagePage> {
         currentDragDistance,
       ),
       child: Scaffold(
-        appBar: AppBar(),
+        appBar: AppBar(
+          actions: [
+            IconButton(
+              icon: const Icon(
+                Icons.share,
+              ),
+              onPressed: shareImage,
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+            ),
+          ],
+        ),
         body: InteractiveViewer(
           child: AnimatedContainer(
             duration: animationDuration,
