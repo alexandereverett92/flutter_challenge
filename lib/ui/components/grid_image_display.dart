@@ -17,6 +17,20 @@ class GridImageDisplay extends StatefulWidget {
 }
 
 class _ImageDisplay extends State<GridImageDisplay> {
+  void showFullscreenImage(BuildContext context, PicsumImageData imageData,
+      ImageProvider imageProvider) {
+    precacheImage(Image.network(imageData.downloadUrl).image, context);
+
+    Navigator.of(context).push(
+      FadePageRoute<FullscreenImagePage>(
+        child: FullscreenImagePage(
+          imageProvider: imageProvider,
+          imageData: imageData,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return CachedNetworkImage(
@@ -32,16 +46,8 @@ class _ImageDisplay extends State<GridImageDisplay> {
       imageBuilder:
           (BuildContext context, ImageProvider<Object> imageProvider) =>
               GestureDetector(
-        onTap: () {
-          Navigator.of(context).push(
-            FadePageRoute<FullscreenImagePage>(
-              child: FullscreenImagePage(
-                imageProvider: imageProvider,
-                imageData: widget.imageData,
-              ),
-            ),
-          );
-        },
+        onTap: () =>
+            showFullscreenImage(context, widget.imageData, imageProvider),
         child: Padding(
           padding: const EdgeInsets.all(2),
           child: ImageHero(

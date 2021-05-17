@@ -45,7 +45,7 @@ class _FullscreenImagePageState extends State<FullscreenImagePage> {
   /// Set the image high res version of the image to display after the transition completes.
   /// Prevents image being shown twice during the transition
   void setShowHighResImage() {
-    Timer(const Duration(milliseconds: 300), () {
+    Timer(const Duration(milliseconds: 200), () {
       if (mounted)
         setState(() {
           showHighResImage = true;
