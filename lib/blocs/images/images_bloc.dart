@@ -14,8 +14,6 @@ import 'package:hive/hive.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:meta/meta.dart';
 
-import '../../models/picsum_image_data.dart';
-
 part 'images_bloc.g.dart';
 part 'images_event.dart';
 part 'images_state.dart';
