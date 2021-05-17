@@ -7,7 +7,7 @@ import 'package:json_annotation/json_annotation.dart';
 /// the star denotes the source file name.
 part 'picsum_image_data.g.dart';
 
-const int scaleDownWidth = 300;
+const int scaleDownWidth = 200;
 
 @JsonSerializable()
 @immutable

@@ -61,7 +61,7 @@ class _ImageListPageState extends State<ImageListPage> {
   /// Based displaying 3 images in a row for an iPhone12 pro max
   int getAxisCountForScreenWidth(BuildContext context) {
     final double width = MediaQuery.of(context).size.width;
-    return (width / (scaleDownWidth / 2)).ceil();
+    return (width / scaleDownWidth).ceil();
   }
 
   @override

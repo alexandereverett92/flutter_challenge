@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:gelato_flutter_challenge/models/picsum_api_error.dart';
 import 'package:gelato_flutter_challenge/models/picsum_image_data.dart';
@@ -44,5 +45,13 @@ class PicsumApi {
       // TODO(Alex): present messages relevant to the cause of the error
       throw const PicsumApiError('Could not load the images.');
     }
+  }
+
+  /// Returns an image as a Uint8List for the [url] specified
+  static Future<Uint8List> getPhotoFromUrl(String url) async {
+    final http.Response response = await http.get(
+      Uri.base.resolve(url),
+    );
+    return response.bodyBytes;
   }
 }

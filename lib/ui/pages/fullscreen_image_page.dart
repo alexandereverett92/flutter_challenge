@@ -1,10 +1,11 @@
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:gelato_flutter_challenge/api/picsum_api.dart';
 import 'package:gelato_flutter_challenge/models/picsum_image_data.dart';
 import 'package:gelato_flutter_challenge/ui/components/image_hero.dart';
-import 'package:http/http.dart' as http;
 import 'package:wc_flutter_share/wc_flutter_share.dart';
 
 enum FullscreenImageStatus { Display, Dragged, DragPop, Closing }
@@ -146,17 +147,15 @@ class _FullscreenImagePageState extends State<FullscreenImagePage> {
     }
   }
 
-  Future<void> shareImage() async {
-    final http.Response response = await http.get(
-      Uri.base.resolve(widget.imageData.downloadUrl),
-    );
-    print(Uri.base.resolve(widget.imageData.downloadUrl).toString());
+  Future<void> shareImage(PicsumImageData imageData) async {
+    final Uint8List image =
+        await PicsumApi.getPhotoFromUrl(imageData.downloadUrl);
 
     await WcFlutterShare.share(
       sharePopupTitle: 'Share',
       fileName: '${widget.imageData.id}.jpg',
       mimeType: 'image/jpg',
-      bytesOfFile: response.bodyBytes,
+      bytesOfFile: image,
     );
   }
 
@@ -174,7 +173,7 @@ class _FullscreenImagePageState extends State<FullscreenImagePage> {
               icon: const Icon(
                 Icons.share,
               ),
-              onPressed: shareImage,
+              onPressed: () => shareImage(widget.imageData),
               padding: const EdgeInsets.symmetric(horizontal: 12),
             ),
           ],
