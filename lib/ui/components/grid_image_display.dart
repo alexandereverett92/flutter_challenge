@@ -19,12 +19,15 @@ class GridImageDisplay extends StatefulWidget {
 class _ImageDisplay extends State<GridImageDisplay> {
   void showFullscreenImage(BuildContext context, PicsumImageData imageData,
       ImageProvider imageProvider) {
-    precacheImage(Image.network(imageData.downloadUrl).image, context);
+    final ImageProvider highResImage =
+        Image.network(imageData.downloadUrl).image;
+    precacheImage(highResImage, context);
 
     Navigator.of(context).push(
       FadePageRoute<FullscreenImagePage>(
         child: FullscreenImagePage(
-          imageProvider: imageProvider,
+          lowResImageProvider: imageProvider,
+          highResImageProvider: highResImage,
           imageData: imageData,
         ),
       ),

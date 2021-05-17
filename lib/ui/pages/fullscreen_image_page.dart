@@ -18,10 +18,12 @@ const double imageDragHorizontalPadding = 24;
 
 class FullscreenImagePage extends StatefulWidget {
   const FullscreenImagePage({
-    @required this.imageProvider,
+    @required this.lowResImageProvider,
+    @required this.highResImageProvider,
     @required this.imageData,
   });
-  final ImageProvider imageProvider;
+  final ImageProvider lowResImageProvider;
+  final ImageProvider highResImageProvider;
   final PicsumImageData imageData;
 
   @override
@@ -262,14 +264,16 @@ class _FullscreenImagePageState extends State<FullscreenImagePage> {
                             feedback: _FullscreenImageDisplay(
                               showHighRes: showHighResImage,
                               imageData: widget.imageData,
-                              imageProvider: widget.imageProvider,
+                              lowResImageProvider: widget.lowResImageProvider,
+                              highResImageProvider: widget.highResImageProvider,
                               constraints: _imageSizingData.constraints,
                               status: FullscreenImageStatus.Dragged,
                             ),
                             child: _FullscreenImageDisplay(
                               showHighRes: showHighResImage,
                               imageData: widget.imageData,
-                              imageProvider: widget.imageProvider,
+                              lowResImageProvider: widget.lowResImageProvider,
+                              highResImageProvider: widget.highResImageProvider,
                               constraints: _imageSizingData.constraints,
                               status: status,
                             ),
@@ -293,13 +297,15 @@ class _FullscreenImagePageState extends State<FullscreenImagePage> {
 class _FullscreenImageDisplay extends StatelessWidget {
   const _FullscreenImageDisplay({
     this.imageData,
-    this.imageProvider,
+    this.lowResImageProvider,
+    this.highResImageProvider,
     this.constraints,
     this.status,
     this.showHighRes = false,
   });
   final PicsumImageData imageData;
-  final ImageProvider imageProvider;
+  final ImageProvider lowResImageProvider;
+  final ImageProvider highResImageProvider;
   final BoxConstraints constraints;
   final FullscreenImageStatus status;
   final bool showHighRes;
@@ -322,7 +328,7 @@ class _FullscreenImageDisplay extends StatelessWidget {
         child: Stack(
           children: <Widget>[
             ImageHero(
-              imageProvider: imageProvider,
+              imageProvider: lowResImageProvider,
               url: imageData.downloadUrl,
             ),
             AnimatedOpacity(
@@ -331,7 +337,7 @@ class _FullscreenImageDisplay extends StatelessWidget {
               child: Container(
                 decoration: BoxDecoration(
                   image: DecorationImage(
-                    image: NetworkImage(imageData.downloadUrl),
+                    image: highResImageProvider,
                     fit: BoxFit.contain,
                   ),
                 ),
