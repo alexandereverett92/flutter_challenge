@@ -1,4 +1,4 @@
-# Gelato Flutter Challenge
+# Flutter Challenge
 
 ## Getting Started
 
