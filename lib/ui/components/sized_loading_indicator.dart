@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class SizedLoadingIndicator extends StatelessWidget {
+  const SizedLoadingIndicator({Key key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return ConstrainedBox(
