@@ -36,8 +36,6 @@ void main() {
 
     final Finder loadingSpinnerFinder = find.byKey(loadingSpinnerKey);
 
-    // Use the `findsOneWidget` matcher provided by flutter_test to verify
-    // that the Text widgets appear exactly once in the widget tree.
     expect(errorFinder, findsOneWidget,
         reason: 'Should display $errorText Please tap here to try again.');
 
@@ -71,8 +69,6 @@ void main() {
 
     final Finder loadingSpinnerFinder = find.byKey(loadingSpinnerKey);
 
-    // Use the `findsOneWidget` matcher provided by flutter_test to verify
-    // that the Text widgets appear exactly once in the widget tree.
     expect(
       errorFinder,
       findsNothing,
@@ -109,8 +105,6 @@ void main() {
 
     final Finder loadingSpinnerFinder = find.byKey(loadingSpinnerKey);
 
-    // Use the `findsOneWidget` matcher provided by flutter_test to verify
-    // that the Text widgets appear exactly once in the widget tree.
     expect(
       errorFinder,
       findsNothing,
