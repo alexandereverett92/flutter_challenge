@@ -60,7 +60,7 @@ class _ImageDisplay extends State<GridImageDisplay> {
           ),
         ),
       ),
-      placeholder: (BuildContext context, String url) => Center(
+      placeholder: (BuildContext context, String url) => const Center(
         child: SizedLoadingIndicator(),
       ),
       errorWidget: (BuildContext context, String url, Object error) =>
