@@ -119,7 +119,7 @@ void main() {
 
     expect(
       loadingSpinnerFinder,
-      findsOneWidget,
+      findsNothing,
       reason: 'Should not show loading spinner.',
     );
   });
